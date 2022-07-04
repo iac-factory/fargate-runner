@@ -31,6 +31,9 @@ a new commit, ensure to run the following:
 git commit -a --message "..."
 ```
 
+If a commit shows as a **Failure**, ***such is the job of the pre-commit hook***. 
+Simply re-commit and then the repository should be able to be pushed to.
+
 ### Generating `tfvars` & `tfvars.json` ###
 
 ```bash
