@@ -42,3 +42,5 @@ cdktf.out/**
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 **/tsconfig.tsbuildinfo
+
+lerna-debug.log
