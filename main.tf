@@ -1,3 +1,16 @@
+/*** @todo */
+// https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
+
+// https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
+// https://docs.aws.amazon.com/eks/latest/userguide/pod-networking.html
+
+// https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
+// https://coredns.io/
+
+// https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html
+
+// https://kubernetes.io/docs/concepts/overview/components/#kube-proxy
+
 data "aws_security_groups" "sgs" {
     filter {
         name   = "group-name"
@@ -51,13 +64,13 @@ resource "aws_instance" "nexus" {
     user_data = join("\n", [
         "systemctl enable amazon-ssm-agent",
         "systemctl start amazon-ssm-agent",
-//        "yum update -y && yum upgrade --security -y || true",
-//        "yum install -y docker",
-//        "usermod -a -G docker ec2-user",
-//        "systemctl enable docker.service",
-//        "systemctl start docker.service",
-//        "curl -L 'https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh' | bash",
-//        "yum install -y gitlab-runner"
+        //        "yum update -y && yum upgrade --security -y || true",
+        //        "yum install -y docker",
+        //        "usermod -a -G docker ec2-user",
+        //        "systemctl enable docker.service",
+        //        "systemctl start docker.service",
+        //        "curl -L 'https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh' | bash",
+        //        "yum install -y gitlab-runner"
     ])
 }
 
@@ -119,7 +132,7 @@ data "aws_iam_policy_document" "controller-policy-document" {
 
 data "aws_iam_policy_document" "cloud-watch-policy-document" {
     statement {
-        effect = "Allow"
+        effect    = "Allow"
         resources = [
             "*"
         ]
@@ -137,7 +150,7 @@ data "aws_iam_policy_document" "ec2-policy-document" {
     statement {
         effect    = "Allow"
         resources = [ "*" ]
-        actions = [
+        actions   = [
             "ec2messages:AcknowledgeMessage",
             "ec2messages:DeleteMessage",
             "ec2messages:FailMessage",
@@ -150,7 +163,7 @@ data "aws_iam_policy_document" "ec2-policy-document" {
 
 data "aws_iam_policy_document" "kms-policy-document" {
     statement {
-        effect = "Allow"
+        effect    = "Allow"
         resources = [
             "*"
         ]
@@ -162,7 +175,7 @@ data "aws_iam_policy_document" "kms-policy-document" {
 
 data "aws_iam_policy_document" "ecr-policy-document" {
     statement {
-        effect = "Allow"
+        effect    = "Allow"
         resources = [
             "*"
         ]
@@ -181,44 +194,44 @@ data "aws_iam_policy_document" "ecr-policy-document" {
 //### Customer Managed Policies
 //################################################################################
 resource "aws_iam_policy" "ssm-policy" {
-    name = format("%s-SSM-Policy", module.parameter.name)
+    name   = format("%s-SSM-Policy", module.parameter.name)
     policy = data.aws_iam_policy_document.ssm-policy-document.json
 }
 
 resource "aws_iam_policy" "controller-policy" {
-    name = format("%s-Controller-Policy", module.parameter.name)
+    name        = format("%s-Controller-Policy", module.parameter.name)
     description = "..."
-    policy = data.aws_iam_policy_document.controller-policy-document.json
+    policy      = data.aws_iam_policy_document.controller-policy-document.json
 }
 
 resource "aws_iam_policy" "iam-service-policy" {
-    name = format("%s-IAM-Policy", module.parameter.name)
+    name        = format("%s-IAM-Policy", module.parameter.name)
     description = "..."
-    policy = data.aws_iam_policy_document.iam-service-policy-document.json
+    policy      = data.aws_iam_policy_document.iam-service-policy-document.json
 }
 
 resource "aws_iam_policy" "cloud-watch-policy" {
-    name = format("%s-CW-Policy", module.parameter.name)
+    name        = format("%s-CW-Policy", module.parameter.name)
     description = "..."
-    policy = data.aws_iam_policy_document.cloud-watch-policy-document.json
+    policy      = data.aws_iam_policy_document.cloud-watch-policy-document.json
 }
 
 resource "aws_iam_policy" "ec2-policy" {
-    name = format("%s-EC2-Policy", module.parameter.name)
+    name        = format("%s-EC2-Policy", module.parameter.name)
     description = "..."
-    policy = data.aws_iam_policy_document.ec2-policy-document.json
+    policy      = data.aws_iam_policy_document.ec2-policy-document.json
 }
 
 resource "aws_iam_policy" "kms-policy" {
-    name = format("%s-KMS-Policy", module.parameter.name)
+    name        = format("%s-KMS-Policy", module.parameter.name)
     description = "..."
-    policy = data.aws_iam_policy_document.kms-policy-document.json
+    policy      = data.aws_iam_policy_document.kms-policy-document.json
 }
 
 resource "aws_iam_policy" "ecr-policy" {
-    name = format("%s-ECR-Policy", module.parameter.name)
+    name        = format("%s-ECR-Policy", module.parameter.name)
     description = "..."
-    policy = data.aws_iam_policy_document.ecr-policy-document.json
+    policy      = data.aws_iam_policy_document.ecr-policy-document.json
 }
 
 //################################################################################
@@ -230,6 +243,27 @@ data "aws_iam_policy" "ssm-management-core" {
 
 data "aws_iam_policy" "ecr-task-execution" {
     name = "AmazonECSTaskExecutionRolePolicy"
+}
+
+data "aws_iam_policy" "k8s-eks" {
+    name = "AmazonEKSClusterPolicy"
+}
+
+/// https://docs.aws.amazon.com/eks/latest/userguide/using-service-linked-roles-eks-nodegroups.html
+data "aws_iam_policy" "k8s-eks-node-group" {
+    name = "AWSServiceRoleForAmazonEKSNodegroup"
+}
+
+data "aws_iam_policy" "k8s-eks-node-group-worker-policy" {
+    name = "AmazonEKSWorkerNodePolicy"
+}
+
+data "aws_iam_policy" "k8s-eks-node-group-container-registry-policy" {
+    name = "AmazonEC2ContainerRegistryReadOnly"
+}
+
+data "aws_iam_policy" "k8s-eks-node-group-cni-policy" {
+    name = "AmazonEKS_CNI_Policy"
 }
 
 //################################################################################
@@ -266,52 +300,162 @@ resource "aws_iam_role" "instance" {
     permissions_boundary = (var.boundary) ? format("%s:*", module.trust-boundary.iam-arn-prefix) : null
 }
 
+resource "aws_iam_role" "kubernetes" {
+    name                  = format("%s-K8s-Service-Linked-Role", module.parameter.name)
+    path                  = module.iam-path.name
+    force_detach_policies = true
+    description           = "..."
+
+    // @todo - make this a policy attachement
+    managed_policy_arns = [
+        data.aws_iam_policy.k8s-eks.arn
+    ]
+
+    assume_role_policy = jsonencode({
+        Version   = "2012-10-17"
+        Statement = [
+            {
+                Action    = "sts:AssumeRole"
+                Effect    = "Allow"
+                Sid       = ""
+                Principal = {
+                    Service = "eks.amazonaws.com"
+                }
+            }
+        ]
+    })
+
+    permissions_boundary = (var.boundary) ? format("%s:*", module.trust-boundary.iam-arn-prefix) : null
+}
+
+resource "aws_iam_role" "kubernetes-node-group" {
+    name                  = format("%s-K8s-Node-Group-Role", module.parameter.name)
+    force_detach_policies = true
+    description           = "..."
+
+    assume_role_policy = jsonencode({
+        Version   = "2012-10-17"
+        Statement = [
+            {
+                Action    = "sts:AssumeRole"
+                Effect    = "Allow"
+                Sid       = ""
+                Principal = {
+                    Service = "eks-nodegroup.amazonaws.com"
+                }
+            },
+            {
+                Action    = "sts:AssumeRole"
+                Effect    = "Allow"
+                Sid       = ""
+                Principal = {
+                    Service = "ec2.amazonaws.com"
+                }
+            }
+        ]
+    })
+
+    permissions_boundary = (var.boundary) ? format("%s:*", module.trust-boundary.iam-arn-prefix) : null
+}
+
+resource "aws_kms_key" "cluster-secrets-encryption-key" {
+    description             = format("%s - K8s Encryption Key for Secrets Management", module.parameter.name)
+    key_usage               = "ENCRYPT_DECRYPT"
+    multi_region            = true
+    deletion_window_in_days = 10
+
+    // policy = jsonencode({
+    //     "Version": "2012-10-17",
+    //     "Id": "key-default-1",
+    //     "Statement": [
+    //         {
+    //             "Sid": "Enable IAM User Permissions",
+    //             "Effect": "Allow",
+    //             "Principal": {
+    //                 "AWS": format("%s:/root", module.trust-boundary.iam-arn-prefix)
+    //             },
+    //             "Action": "kms:*",
+    //             "Resource": "*"
+    //         }
+    //     ]
+    // })
+
+    tags = {
+        Name = format("%s-KMS-Key", module.parameter.name)
+    }
+}
+
+resource "aws_kms_alias" "cluster-secrets-encryption-alias" {
+    target_key_id = aws_kms_key.cluster-secrets-encryption-key.id
+    name          = format("alias/%s-KMS-Key", module.parameter.name)
+}
+
 //################################################################################
 //### IAM Role Policy Attachments
 //################################################################################
 resource "aws_iam_role_policy_attachment" "ssm-policy-attachment" {
-    role = aws_iam_role.instance.name
+    role       = aws_iam_role.instance.name
     policy_arn = aws_iam_policy.ssm-policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "controller-policy-attachment" {
-    role = aws_iam_role.instance.name
+    role       = aws_iam_role.instance.name
     policy_arn = aws_iam_policy.controller-policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "iam-service-policy-attachment" {
-    role = aws_iam_role.instance.name
+    role       = aws_iam_role.instance.name
     policy_arn = aws_iam_policy.iam-service-policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "cloud-watch-policy-attachment" {
-    role = aws_iam_role.instance.name
+    role       = aws_iam_role.instance.name
     policy_arn = aws_iam_policy.cloud-watch-policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "ec2-policy-attachment" {
-    role = aws_iam_role.instance.name
+    role       = aws_iam_role.instance.name
     policy_arn = aws_iam_policy.ec2-policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "kms-policy-attachment" {
-    role = aws_iam_role.instance.name
+    role       = aws_iam_role.instance.name
     policy_arn = aws_iam_policy.kms-policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "ecr-policy-attachment" {
-    role = aws_iam_role.instance.name
+    role       = aws_iam_role.instance.name
     policy_arn = aws_iam_policy.ecr-policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "ecr-managed-policy-attachment" {
-    role = aws_iam_role.instance.name
+    role       = aws_iam_role.instance.name
     policy_arn = data.aws_iam_policy.ecr-task-execution.arn
 }
 
 resource "aws_iam_role_policy_attachment" "ssm-managed-policy-attachment" {
-    role = aws_iam_role.instance.name
+    role       = aws_iam_role.instance.name
     policy_arn = data.aws_iam_policy.ssm-management-core.arn
+}
+
+// resource "aws_iam_role_policy_attachment" "eks-node-group-policy-attachment" {
+//     role = aws_iam_role.kubernetes-node-group.name
+//     policy_arn = data.aws_iam_policy.k8s-eks-node-group.arn
+// }
+
+resource "aws_iam_role_policy_attachment" "k8s-eks-node-group-worker-policy-attachment" {
+    role       = aws_iam_role.kubernetes-node-group.name
+    policy_arn = data.aws_iam_policy.k8s-eks-node-group-worker-policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "k8s-eks-node-group-container-registry-policy-attachment" {
+    role       = aws_iam_role.kubernetes-node-group.name
+    policy_arn = data.aws_iam_policy.k8s-eks-node-group-container-registry-policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "k8s-eks-node-group-cni-policy-attachment" {
+    role       = aws_iam_role.kubernetes-node-group.name
+    policy_arn = data.aws_iam_policy.k8s-eks-node-group-cni-policy.arn
 }
 
 //################################################################################
@@ -322,3 +466,97 @@ resource "aws_iam_instance_profile" "instance" {
     path = module.iam-path.name
     role = aws_iam_role.instance.name
 }
+//
+//resource "aws_security_group" "k8s-cluster-sg" {
+//    name        = "eks-cluster-sg-Test-Runner-Cluster-741425880"
+//    owner_id    = "700423713782"
+//    tags        = {
+//        "Name"                                      = "eks-cluster-sg-Test-Runner-Cluster-741425880"
+//        "kubernetes.io/cluster/Test-Runner-Cluster" = "owned"
+//    }
+//
+//    tags_all    = {
+//        "Name"                                      = "eks-cluster-sg-Test-Runner-Cluster-741425880"
+//        "kubernetes.io/cluster/Test-Runner-Cluster" = "owned"
+//    }
+//
+//    vpc_id      = "vpc-f85bc791"
+//
+//    timeouts {}
+//
+//    description = "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads."
+//    egress      = [
+//        {
+//            cidr_blocks = [
+//                "0.0.0.0/0",
+//            ]
+//            description      = ""
+//            from_port        = 0
+//            ipv6_cidr_blocks = [
+//                "::/0",
+//            ]
+//            prefix_list_ids = [ ]
+//            protocol        = "-1"
+//            security_groups = [ ]
+//            self            = false
+//            to_port         = 0
+//        }
+//    ]
+//
+//    ingress = [
+//        {
+//            cidr_blocks      = [ ]
+//            description      = ""
+//            from_port        = 0
+//            ipv6_cidr_blocks = [ ]
+//            prefix_list_ids  = [ ]
+//            protocol         = "-1"
+//            security_groups  = [ ]
+//            self             = true
+//            to_port          = 0
+//        }
+//    ]
+//}
+//
+//resource "aws_eks_cluster" "k8s-cluster" {
+//    enabled_cluster_log_types = [
+//        "api",
+//        "audit",
+//        "authenticator",
+//        "controllerManager",
+//        "scheduler"
+//    ]
+//
+//    name             = "Test-Runner-Cluster"
+//    platform_version = "eks.3"
+//    role_arn         = aws_iam_role.kubernetes.arn
+//
+//    encryption_config {
+//        resources = [
+//            "secrets"
+//        ]
+//        provider {
+//            key_arn = aws_kms_key.cluster-secrets-encryption-key.arn
+//        }
+//    }
+//
+//    kubernetes_network_config {
+//        ip_family         = "ipv4"
+//        service_ipv4_cidr = try(data.aws_vpc.vpc.cidr_block, "10.100.0.0/16")
+//    }
+//
+//    timeouts {}
+//
+//    vpc_config {
+//        cluster_security_group_id = aws_security_group.k8s-cluster-sg.id
+//        endpoint_private_access   = false
+//        endpoint_public_access    = true
+//        public_access_cidrs       = [
+//            "0.0.0.0/0"
+//        ]
+//
+//        security_group_ids = [ ]
+//        subnet_ids         = data.aws_subnets.subnet-data-array.ids
+//        vpc_id             = data.aws_vpc.vpc.id
+//    }
+//}
