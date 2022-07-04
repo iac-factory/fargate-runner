@@ -48,14 +48,6 @@ upon `git commit`.
     pre-commit --version
     ```
 3. Generate Configuration (`.pre-commit-config.yaml`)
-    ```yaml
-    repos:
-        -   repo: https://github.com/terraform-docs/terraform-docs
-            rev: "v0.16.0"
-            hooks:
-                -   id: terraform-docs-go
-                    args: ["markdown", "--recursive", "table", "--output-file", "README.md", "."]
-    ```
 4. Configure `git` hooks
     ```bash
     pre-commit install

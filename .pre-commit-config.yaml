@@ -4,8 +4,6 @@ repos:
         hooks:
             -   id: terraform-docs-go
                 name: terraform-docs
-                types:
-                    - executable
                 always_run: true
                 entry: "terraform-docs"
                 args: ["--config", "./documentation/.terraform-docs.yml"]
