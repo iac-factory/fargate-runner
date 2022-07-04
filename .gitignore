@@ -1,18 +1,12 @@
 .env
-.env.backup
-.env.backup.*
-
+.swc
 .idea
 .vscode
 .eclipse
 
-.swc
-*/.swc
-**/.swc/**
-
-artifacts
-artifacts/*
-artifacts/**
+coverage
+unit-testing
+documentation
 
 node_modules
 node_modules/*
@@ -45,23 +39,6 @@ cdktf.out/**
 *.tgz
 *.zip
 
-coverage
-documentation
-
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 **/tsconfig.tsbuildinfo
-
-*.log
-
-openapitools.json
-
-certificate.crt
-private.pem
-public.pem
-
-front-end
-
-data-dump
-
-us-east-2-bundle.pem
