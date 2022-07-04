@@ -6,4 +6,4 @@ repos:
                 name: terraform-docs
                 always_run: true
                 entry: "terraform-docs"
-                args: ["--config", "./documentation/.terraform-docs.yml"]
+                args: ["--config", "./documentation/.terraform-docs.yml", "."]
