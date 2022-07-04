@@ -1,0 +1,105 @@
+#!/bin/bash --posix
+
+# -*-  Coding: UTF-8  -*- #
+# -*-  System: Linux  -*- #
+# -*-  Usage:   *.*   -*- #
+
+set -euo pipefail # (0)
+
+# --> Current-Working-Directory
+export CWD="$( cd "$(dirname "${0}")" && pwd -P)"
+
+# --> Application-Working-Directory
+declare AWD="$( dirname "${CWD}" )"
+
+declare -a errors=("")
+
+function AWSCLI () {
+    aws --version 2>/dev/null || echo "AWS-CLI Not Installed"
+
+    [[ "$(command -v aws)" == "" ]] && errors+=("aws")
+
+    return ${?}
+}
+
+function Brew () {
+    brew --version 2>/dev/null | head -n 1 || true
+
+    [[ "$(command -v brew)" == "" ]] && echo "Brew Not Installed"
+    [[ "$(command -v brew)" == "" ]] && errors+=("brew")
+
+    return ${?}
+}
+
+function Docker () {
+    docker --version 2>/dev/null || echo "Docker Not Installed"
+
+    [[ "$(command -v docker)" == "" ]] && errors+=("docker")
+
+    return ${?}
+}
+
+function Compose () {
+    docker-compose --version 2>/dev/null || echo "Docker-Compose Not Installed"
+
+    [[ "$(command -v docker-compose)" == "" ]] && errors+=("docker-compose")
+
+    return ${?}
+}
+
+function Node () {
+    node --version 2>/dev/null || echo "Node.js Not Installed"
+
+    [[ "$(command -v node)" == "" ]] && errors+=("node")
+
+    return ${?}
+}
+
+function NPM () {
+    npm --version 2>/dev/null || echo "NPM Not Installed"
+
+    [[ "$(command -v npm)" == "" ]] && errors+=("npm")
+
+    return ${?}
+}
+
+function Terraform () {
+    terraform --version 2>/dev/null | head -n 1 || echo "Terraform Not Installed"
+
+    [[ "$(command -v terraform)" == "" ]] && errors+=("terraform")
+
+    return ${?}
+}
+
+function Errors () {
+    [[ "${errors[@]}" == "" ]] || true && echo "No Errors Found"
+    [[ "${errors[@]}" == "" ]] || echo "Errors: ${errors[@]:""}"
+
+    return ${?}
+}
+
+function Debug () {
+    echo "CLI Input:                        ${@}"
+
+    printf "\n"
+
+    echo "Application Working Directory:    ${AWD}"
+
+    printf "\n"
+
+    echo "Docker Runtime Version:           $(Docker)"
+    echo "Docker-Compose Runtime Version:   $(Compose)"
+    echo "Node Runtime Version:             $(Node)"
+    echo "NPM Runtime Version:              $(NPM)"
+    echo "AWS-CLI Runtime Version:          $(AWSCLI)"
+    echo "Terraform Runtime Version:        $(Terraform)"
+    echo "Homebrew Runtime Version:         $(Brew)"
+
+    printf "\n"
+
+    echo "Errors:                           $(Errors)"
+
+    return ${?}
+}
+
+Debug "${@:-"${0}"}" && echo

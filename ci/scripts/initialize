@@ -1,0 +1,123 @@
+#!/bin/bash --posix
+
+# -*-  Coding: UTF-8  -*- #
+# -*-  System: Linux  -*- #
+# -*-  Usage:   *.*   -*- #
+
+set -euo pipefail # (0)
+
+# --> Current-Working-Directory
+export CWD="$( cd "$(dirname "${0}")" && pwd -P)"
+
+# --> Application-Working-Directory
+export AWD="$(dirname "${CWD}")"
+
+# --> Webserver-Working-Directory
+export WWD="${AWD}/front-end"
+
+[[ " ${@:-""} " =~ " --verbose "    ]] && set -v # (1)
+[[ " ${@:-""} " =~ " --export "     ]] && set -a # (2)
+[[ " ${@:-""} " =~ " --strict "     ]] && set -e # (3)
+[[ " ${@:-""} " =~ " --monitor "    ]] && set -m # (4)
+[[ " ${@:-""} " =~ " --pristine "   ]] && set -p # (5)
+[[ " ${@:-""} " =~ " --trace "      ]] && set -x # (6)
+[[ " ${@:-""} " =~ " --expand "     ]] && set -b # (7)
+
+function Declarations () {
+    echo "Removing Declaration Files"
+    find ./packages -type f -name '*.d.*' -exec rm -rf {} \;
+    echo
+}
+
+function Maps () {
+    echo "Removing Map Files"
+    find ./packages -type f -name '*.map' -exec rm -rf {} \;
+    echo
+}
+
+function Javascript () {
+    echo "Removing Compiled Javascript"
+    find ./packages -type f -name '*.js' -exec rm -rf {} \;
+    echo
+}
+
+function Clean () {
+    echo "(API) Cleaning Distribution File(s)"
+
+    rm -rf "${AWD}/distribution" && echo
+
+    echo "(Web-Server) Cleaning Previous Installation"
+
+    [[ -d "${WWD}" ]] && rm -rf "${WWD}" || true
+
+    echo && return ${?}
+}
+
+function API () {
+    echo "(API) Installing Dependencies"
+
+    Archive && npm install "${AWD}" && cd "${AWD}" && tsc --build tsconfig.json
+
+    cd "${AWD}/distribution" && npm install --install-links \
+        --omit dev --omit optional --omit peer
+
+    echo && return ${?}
+}
+
+function Webserver () {
+    echo "(Web-Server) Installing Dependencies" && echo
+
+    # *** Hardcoded Path *** #
+    # --> The use-case for specifying a hardcoded link outside
+    # of a configuration file is extremely limited...
+
+    git clone "https://github.com/iac-factory/ts-react-template.git" "${WWD}"
+
+    cd "${_}" && npm ci && npm run build
+
+    return ${?}
+}
+
+function Archive () {
+    sed -i.backup 's/MONGO_URI="mongodb:\/\/0.0.0.0:27017"/MONGO_URI="mongodb:\/\/mongodb:27017"/g' .env \
+        || sed -i 's/MONGO_URI="mongodb:\/\/0.0.0.0:27017"/MONGO_URI="mongodb:\/\/mongodb:27017"/g' .env \
+            || true
+
+    return ${?}
+}
+
+function Compose () {
+    docker rmi --force api && docker rmi --force web && docker rmi --force nginx
+
+    docker-compose down && docker-compose rm
+
+    docker-compose up --build --force-recreate --always-recreate-deps --remove-orphans
+
+    return ${?}
+}
+
+function Debug () {
+    bash "${CWD}/debug"
+
+    return ${?}
+}
+
+Debug
+
+Clean && API && Webserver
+
+Compose
+
+# --------------------------------------------------------------------------------
+# Bash Set-Options Reference
+# --------------------------------------------------------------------------------
+
+# 0. An Opinionated, Well Agreed Upon Standard for Bash Script Execution
+# 1. set -o verbose     ::: Print Shell Input upon Read
+# 2. set -o allexport   ::: Export all Variable(s) + Function(s) to Environment
+# 3. set -o errexit     ::: Exit Immediately upon Pipeline'd Failure
+# 4. set -o monitor     ::: Output Process-Separated Command(s)
+# 5. set -o privileged  ::: Ignore Externals - Ensures of Pristine Run Environment
+# 6. set -o xtrace      ::: Print a Trace of Simple Commands
+# 7. set -o braceexpand ::: Enable Brace Expansion
+# 8. set -o no-exec     ::: Bash Syntax Debugging

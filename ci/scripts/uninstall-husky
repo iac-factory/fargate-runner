@@ -1,0 +1,12 @@
+#!/bin/bash --posix
+
+# -*-  Coding: UTF-8  -*- #
+# -*-  System: Linux  -*- #
+# -*-  Usage:   *.*   -*- #
+
+set -euo pipefail # (0)
+
+# --> Current-Working-Directory
+export CWD="$( cd "$(dirname "${0}")" && pwd -P)"
+
+cd "${CWD}/.." && npm uninstall husky && git config --unset core.hooksPath
