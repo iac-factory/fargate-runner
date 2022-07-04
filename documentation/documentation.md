@@ -17,7 +17,6 @@ terraform-docs tfvars hcl "$(git rev-parse --show-toplevel)"
 terraform-docs tfvars json "$(git rev-parse --show-toplevel)"
 ```
 
-
 ### `terraform-docs` ###
 
 In order to install `terraform-docs`, ensure `brew` is installed (for MacOS systems), and run
@@ -33,7 +32,7 @@ brew uninstall terraform-docs
 brew install terraform-docs
 ```
 
-It's elected to use `brew uninstall` vs `brew upgrade` as any upgrades will still keep old versions on the system.
+It's elected to use `brew uninstall` vs `brew upgrade` because old versions are then removed.
 
 ### `git` & `pre-commit` ###
 

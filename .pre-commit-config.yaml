@@ -3,4 +3,5 @@ repos:
         rev: "v0.16.0"
         hooks:
             -   id: terraform-docs-go
-                args: ["."]
+                name: terraform-docs
+                args: ["--config", "./documentation", ".terraform-docs.yml"]
