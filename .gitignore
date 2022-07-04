@@ -1,46 +1,24 @@
-.env
-.swc
-.idea
-.vscode
-.eclipse
-
-coverage
-unit-testing
-documentation
-
-node_modules
-node_modules/*
-node_modules/**
-
-distribution
-distribution/*
-distribution/**
-
-declarations
-declarations/*
-declarations/**
-
-.terraform/*
+**/.terraform/*
 
 *.tfstate
 *.tfstate.*
 
-cdktf.out
-cdktf.out/*
-cdktf.out/**
+crash.log
+crash.*.log
 
-*.js
-**/*.js
-**/*.map
-**/*.d.ts
+# Exclude all .tfvars files, which are likely to contain sensitive data, such as
+# password, private keys, and other secrets. These should not be part of version
+# control as they are data points which are potentially sensitive and subject
+# to change depending on the environment.
 
-.DS_Store
+*.tfvars
+*.tfvars.json
 
-*.tgz
-*.zip
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
 
-*.tsbuildinfo
-tsconfig.tsbuildinfo
-**/tsconfig.tsbuildinfo
+.terraformrc
 
-lerna-debug.log
+terraform.rc
