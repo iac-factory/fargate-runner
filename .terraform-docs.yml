@@ -1,0 +1,71 @@
+# # see: https://terraform-docs.io/user-guide/configuration/version
+# version: ">= 0.10, < 0.12"
+
+# see: https://terraform-docs.io/user-guide/configuration/formatter
+formatter: markdown table
+
+# see: https://terraform-docs.io/user-guide/configuration/header-from
+header-from: documentation/header.md
+
+# see: https://terraform-docs.io/user-guide/configuration/footer-from
+footer-from: documentation/footer.md
+
+# see: https://terraform-docs.io/user-guide/configuration/recursive
+recursive:
+    enabled: false
+    path: modules
+
+# see: https://terraform-docs.io/user-guide/configuration/sections
+sections:
+    show:
+        - header
+        - inputs
+        - providers
+        - modules
+        - footer
+
+# # see: https://terraform-docs.io/user-guide/configuration/content
+content: |-
+    {{ .Header }}
+
+    ## Resources
+    {{ range .Module.Resources }}
+    - {{ .GetMode }}.{{ .Spec }} ({{ .Position.Filename }}#{{ .Position.Line }})
+    {{- end }}
+
+    ## Examples
+
+    ```hcl
+    {{ include "examples/example.tf" }}
+    ```
+
+    {{ .Providers }}
+
+    {{ .Outputs }}
+
+    {{ .Inputs }}
+         
+    {{ include "documentation/documentation.md" }}
+
+# # see: https://terraform-docs.io/user-guide/configuration/output
+output:
+    file: README.md
+    mode: inject
+
+# see: https://terraform-docs.io/user-guide/configuration/sort
+sort:
+    enabled: true
+    by: required
+
+# # https://terraform-docs.io/user-guide/configuration/output-values/
+output-values:
+    enabled: false
+    from: "."
+
+# see: https://terraform-docs.io/user-guide/configuration/settings
+settings:
+    indent: 4
+    escape: false
+    default: true
+    required: true
+    type: true
