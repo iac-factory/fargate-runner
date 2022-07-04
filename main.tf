@@ -51,13 +51,13 @@ resource "aws_instance" "nexus" {
     user_data = join("\n", [
         "systemctl enable amazon-ssm-agent",
         "systemctl start amazon-ssm-agent",
-        "yum update -y && yum upgrade --security -y || true",
-        "yum install -y docker",
-        "usermod -a -G docker ec2-user",
-        "systemctl enable docker.service",
-        "systemctl start docker.service",
-        "curl -L 'https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh' | bash",
-        "yum install -y gitlab-runner"
+//        "yum update -y && yum upgrade --security -y || true",
+//        "yum install -y docker",
+//        "usermod -a -G docker ec2-user",
+//        "systemctl enable docker.service",
+//        "systemctl start docker.service",
+//        "curl -L 'https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh' | bash",
+//        "yum install -y gitlab-runner"
     ])
 }
 
