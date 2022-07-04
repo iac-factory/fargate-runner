@@ -39,7 +39,7 @@ resource "aws_instance" "nexus" {
     instance_type               = "t3.micro"
     associate_public_ip_address = false
 
-    security_groups = data.aws_security_groups.sgs.ids
+    vpc_security_group_ids = data.aws_security_groups.sgs.ids
     iam_instance_profile   = aws_iam_instance_profile.instance.name
 
     subnet_id = each.value
