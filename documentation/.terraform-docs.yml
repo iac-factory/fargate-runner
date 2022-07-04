@@ -59,8 +59,8 @@ sort:
 
 # # https://terraform-docs.io/user-guide/configuration/output-values/
 output-values:
-    enabled: false
-    from: "."
+    enabled: true
+    from: "outputs.tf"
 
 # see: https://terraform-docs.io/user-guide/configuration/settings
 settings:

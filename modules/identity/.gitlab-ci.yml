@@ -1,0 +1,39 @@
+#!/usr/bin/env file .
+
+# -*-  Coding: UTF-8  -*- #
+# -*-  System: Linux  -*- #
+# -*-  Usage:  *.Yaml -*- #
+
+#
+# ========================================================================
+# --> Pipeline: Continuous Integration & Deployment Configuration(s)
+# ========================================================================
+#
+
+.Tags: &Runner [ "Development" ]
+
+# ------------------------------------------------------------------------
+# Primary Entry-Point (Jobs + Stages + Triggers)
+# ------------------------------------------------------------------------
+
+variables:
+    MODULE: "identity"
+    PROVIDER: "aws"
+
+include:
+    local: "./ci/*.yaml"
+
+stages:
+    - Package
+
+Upload:
+    stage: Package
+    extends: .TF-Module
+    variables:
+        TERRAFORM_MODULE_NAME: "${MODULE}"
+        TERRAFORM_MODULE_SYSTEM: "${PROVIDER}"
+    rules:
+        -   if: $CI_COMMIT_TAG
+
+default:
+    tags: *Runner
