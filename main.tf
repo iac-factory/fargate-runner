@@ -438,11 +438,6 @@ resource "aws_iam_role_policy_attachment" "ssm-managed-policy-attachment" {
     policy_arn = data.aws_iam_policy.ssm-management-core.arn
 }
 
-// resource "aws_iam_role_policy_attachment" "eks-node-group-policy-attachment" {
-//     role = aws_iam_role.kubernetes-node-group.name
-//     policy_arn = data.aws_iam_policy.k8s-eks-node-group.arn
-// }
-
 resource "aws_iam_role_policy_attachment" "k8s-eks-node-group-worker-policy-attachment" {
     role       = aws_iam_role.kubernetes-node-group.name
     policy_arn = data.aws_iam_policy.k8s-eks-node-group-worker-policy.arn
