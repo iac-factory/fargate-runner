@@ -24,6 +24,13 @@ No inputs.
 
 Documentation is both programmatically and conventionally generated.
 
+**Note** - Given the workflow between `git` & `pre-commit`, when creating
+a new commit, ensure to run the following:
+
+```bash
+git commit -a --message "..."
+```
+
 ### Generating `tfvars` & `tfvars.json` ###
 
 ```bash
