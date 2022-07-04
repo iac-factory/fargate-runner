@@ -1,5 +1,3 @@
-# Terraform
-
 **/.terraform/*
 
 *.tfstate
@@ -20,12 +18,8 @@ override.tf.json
 
 terraform.rc
 
-# IDE
-
 .eclipse
 .vscode
 .idea
-
-# Apple
 
 .DS_Store
